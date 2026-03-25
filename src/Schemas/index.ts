@@ -7,8 +7,12 @@ export const queryUserActivity = `
           restrictedContributionsCount
           totalPullRequestReviewContributions
         }
-        organizations(first: 1) {
+        organizations {
           totalCount
+          nodes {
+            name
+            login
+          }
         }
         followers(first: 1) {
           totalCount
@@ -43,7 +47,7 @@ export const queryUserPullRequest = `
 export const queryUserRepository = `
   query userInfo($username: String!) {
     user(login: $username) {
-      repositories(first: 50, ownerAffiliations: OWNER, orderBy: {direction: DESC, field: STARGAZERS}) {
+      repositories(first: 100, ownerAffiliations: [OWNER, ORGANIZATION_MEMBER, COLLABORATOR], orderBy: {direction: DESC, field: STARGAZERS}) {
         totalCount
         nodes {
           languages(first: 3, orderBy: {direction:DESC, field: SIZE}) {

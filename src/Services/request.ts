@@ -13,11 +13,15 @@ export async function requestGithubData<T = unknown>(
   variables: { [key: string]: string },
   token = "",
 ) {
+  // Only add Authorization header if token exists
+  const headers: { [key: string]: string } = {};
+  if (token && token.trim()) {
+    headers.Authorization = `bearer ${token}`;
+  }
+  
   const response = await soxa.post("", {}, {
     data: { query, variables },
-    headers: {
-      Authorization: `bearer ${token}`,
-    },
+    headers,
   }) as QueryDefaultResponse<{ user: T }>;
   const responseData = response.data;
 

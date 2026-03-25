@@ -19,7 +19,8 @@ import { Logger } from "../Helpers/Logger.ts";
 import { requestGithubData } from "./request.ts";
 
 // Need to be here - Exporting from another file makes array of null
-export const TOKENS = [
+// Lazy loading to ensure dotenv is loaded first
+export const getTokens = () => [
   Deno.env.get("GITHUB_TOKEN1"),
   Deno.env.get("GITHUB_TOKEN2"),
 ];
@@ -94,15 +95,16 @@ export class GithubApiService extends GithubRepository {
     variables: { [key: string]: string },
   ) {
     try {
+      const tokens = getTokens();
       const retry = new Retry(
-        TOKENS.length,
+        Math.max(tokens.length, 1), // At least 1 attempt even without tokens
         CONSTANTS.DEFAULT_GITHUB_RETRY_DELAY,
       );
       return await retry.fetch<Promise<T>>(async ({ attempt }) => {
         return await requestGithubData(
           query,
           variables,
-          TOKENS[attempt],
+          tokens[attempt] || "", // Use empty string if no token available
         );
       });
     } catch (error) {

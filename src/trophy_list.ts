@@ -2,6 +2,10 @@ import {
   AccountDurationTrophy,
   AllSuperRankTrophy,
   AncientAccountTrophy,
+  BloggerTrophy,
+  MentorTrophy,  
+  ArchitectTrophy,
+  PolyglotTrophy,
   Joined2020Trophy,
   LongTimeAccountTrophy,
   MultipleLangTrophy,
@@ -22,27 +26,28 @@ import { RANK, RANK_ORDER } from "./utils.ts";
 export class TrophyList {
   private trophies = new Array<Trophy>();
   constructor(userInfo: UserInfo) {
-    // Base trophies
+    // 🎯 CYNTHIA'S CUSTOM TROPHY SET
+    // Core GitHub metrics (no stars - removed TotalStarTrophy)
     this.trophies.push(
-      new TotalStarTrophy(userInfo.totalStargazers),
       new TotalCommitTrophy(userInfo.totalCommits),
       new TotalFollowerTrophy(userInfo.totalFollowers),
       new TotalIssueTrophy(userInfo.totalIssues),
       new TotalPullRequestTrophy(userInfo.totalPullRequests),
       new TotalRepositoryTrophy(userInfo.totalRepositories),
-      new TotalReviewsTrophy(userInfo.totalReviews),
     );
-    // Secret trophies
+    
+    // 🎨 Custom trophies for specialized achievements
     this.trophies.push(
-      new AllSuperRankTrophy(this.isAllSRank),
-      new MultipleLangTrophy(userInfo.languageCount),
-      new LongTimeAccountTrophy(userInfo.durationYear),
-      new AncientAccountTrophy(userInfo.ancientAccount),
-      new OGAccountTrophy(userInfo.ogAccount),
-      new Joined2020Trophy(userInfo.joined2020),
-      new MultipleOrganizationsTrophy(userInfo.totalOrganizations),
-      new AccountDurationTrophy(userInfo.durationDays),
+      new BloggerTrophy(userInfo.devtoArticles || 0), // Will need to add this to UserInfo
+      new MentorTrophy(userInfo.totalReviews),
+      new ArchitectTrophy(userInfo.totalLinesOfCode || 0), // Will need to add this
+      new PolyglotTrophy(userInfo.languageCount),
     );
+    
+    // 🚫 REMOVED ALL SECRET TROPHIES (not relevant for newer GitHub accounts)
+    // - AllSuperRankTrophy, MultipleLangTrophy, LongTimeAccountTrophy  
+    // - AncientAccountTrophy, OGAccountTrophy, Joined2020Trophy
+    // - MultipleOrganizationsTrophy, AccountDurationTrophy
   }
   get length() {
     return this.trophies.length;

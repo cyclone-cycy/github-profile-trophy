@@ -616,3 +616,205 @@ export class TotalRepositoryTrophy extends Trophy {
     this.filterTitles = ["Repo", "Repository", "Repositories"];
   }
 }
+
+// 🎨 CUSTOM TROPHIES FOR CYNTHIA
+
+export class BloggerTrophy extends Trophy {
+  constructor(score: number) {
+    const rankConditions = [
+      new RankCondition(
+        RANK.SSS,
+        "God Blogger",
+        100,
+      ),
+      new RankCondition(
+        RANK.SS,
+        "Deep Blogger",
+        75,
+      ),
+      new RankCondition(
+        RANK.S,
+        "Super Blogger",
+        50,
+      ),
+      new RankCondition(
+        RANK.AAA,
+        "Ultra Blogger",
+        30,
+      ),
+      new RankCondition(
+        RANK.AA,
+        "Hyper Blogger",
+        20,
+      ),
+      new RankCondition(
+        RANK.A,
+        "High Blogger",
+        10,
+      ),
+      new RankCondition(
+        RANK.B,
+        "Middle Blogger",
+        5,
+      ),
+      new RankCondition(
+        RANK.C,
+        "First Article",
+        1,
+      ),
+    ];
+    super(score, rankConditions);
+    this.title = "Blogger";
+    this.filterTitles = ["Blogger", "Article", "Writing", "Blog"];
+  }
+}
+
+export class MentorTrophy extends Trophy {
+  constructor(score: number) {
+    const rankConditions = [
+      new RankCondition(
+        RANK.SSS,
+        "God Mentor",
+        500,
+      ),
+      new RankCondition(
+        RANK.SS,
+        "Deep Mentor",
+        300,
+      ),
+      new RankCondition(
+        RANK.S,
+        "Super Mentor",
+        150,
+      ),
+      new RankCondition(
+        RANK.AAA,
+        "Ultra Mentor",
+        100,
+      ),
+      new RankCondition(
+        RANK.AA,
+        "Hyper Mentor",
+        50,
+      ),
+      new RankCondition(
+        RANK.A,
+        "High Mentor",
+        25,
+      ),
+      new RankCondition(
+        RANK.B,
+        "Middle Mentor",
+        10,
+      ),
+      new RankCondition(
+        RANK.C,
+        "First Review",
+        1,
+      ),
+    ];
+    super(score, rankConditions);
+    this.title = "Mentor";
+    this.filterTitles = ["Mentor", "Review", "Reviewer", "Guide"];
+  }
+}
+
+export class ArchitectTrophy extends Trophy {
+  constructor(score: number) {
+    const rankConditions = [
+      new RankCondition(
+        RANK.SSS,
+        "God Architect",
+        1000000, // 1M+ lines of code
+      ),
+      new RankCondition(
+        RANK.SS,
+        "Deep Architect",
+        500000,
+      ),
+      new RankCondition(
+        RANK.S,
+        "Super Architect",
+        250000,
+      ),
+      new RankCondition(
+        RANK.AAA,
+        "Ultra Architect",
+        100000,
+      ),
+      new RankCondition(
+        RANK.AA,
+        "Hyper Architect",
+        50000,
+      ),
+      new RankCondition(
+        RANK.A,
+        "High Architect",
+        25000,
+      ),
+      new RankCondition(
+        RANK.B,
+        "Middle Architect",
+        10000,
+      ),
+      new RankCondition(
+        RANK.C,
+        "First Build",
+        1000,
+      ),
+    ];
+    super(score, rankConditions);
+    this.title = "Architect";
+    this.filterTitles = ["Architect", "Builder", "Structure", "Design"];
+  }
+}
+
+export class PolyglotTrophy extends Trophy {
+  constructor(score: number) {
+    const rankConditions = [
+      new RankCondition(
+        RANK.SSS,
+        "God Polyglot",
+        15, // 15+ languages
+      ),
+      new RankCondition(
+        RANK.SS,
+        "Deep Polyglot",
+        12,
+      ),
+      new RankCondition(
+        RANK.S,
+        "Super Polyglot",
+        10,
+      ),
+      new RankCondition(
+        RANK.AAA,
+        "Ultra Polyglot",
+        8,
+      ),
+      new RankCondition(
+        RANK.AA,
+        "Hyper Polyglot",
+        6,
+      ),
+      new RankCondition(
+        RANK.A,
+        "High Polyglot",
+        5,
+      ),
+      new RankCondition(
+        RANK.B,
+        "Middle Polyglot",
+        3,
+      ),
+      new RankCondition(
+        RANK.C,
+        "First Language",
+        1,
+      ),
+    ];
+    super(score, rankConditions);
+    this.title = "Polyglot";
+    this.filterTitles = ["Polyglot", "Language", "Multi", "Diverse"];
+  }
+}

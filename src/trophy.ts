@@ -183,20 +183,20 @@ export class LongTimeAccountTrophy extends Trophy {
     this.hidden = true;
   }
 }
-export class MultipleOrganizationsTrophy extends Trophy {
+export class TeamPlayerTrophy extends Trophy {
   constructor(score: number) {
     const rankConditions = [
-      new RankCondition(
-        RANK.SECRET,
-        // or if this doesn't render well: "Factorum"
-        "Jack of all Trades",
-        3,
-      ),
+      new RankCondition(RANK.SSS, "Global Partner", 10),
+      new RankCondition(RANK.SS, "Big Player", 7),
+      new RankCondition(RANK.S, "Team Leader", 5),
+      new RankCondition(RANK.AAA, "Collaborator", 4),
+      new RankCondition(RANK.AA, "Active Member", 3),
+      new RankCondition(RANK.A, "Team Player", 2),
+      new RankCondition(RANK.B, "Member", 1),
     ];
     super(score, rankConditions);
-    this.title = "Organizations";
-    this.filterTitles = ["Organizations", "Orgs", "Teams"];
-    this.hidden = true;
+    this.title = "TeamPlayer";
+    this.filterTitles = ["TeamPlayer", "Organizations", "Orgs"];
   }
 }
 

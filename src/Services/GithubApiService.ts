@@ -20,10 +20,17 @@ import { requestGithubData } from "./request.ts";
 
 // Need to be here - Exporting from another file makes array of null
 // Lazy loading to ensure dotenv is loaded first
-export const getTokens = () => [
-  Deno.env.get("GITHUB_TOKEN1"),
-  Deno.env.get("GITHUB_TOKEN2"),
-];
+export const getTokens = () => {
+  const token1 = Deno.env.get("GITHUB_TOKEN1") || "";
+  const token2 = Deno.env.get("GITHUB_TOKEN2") || "";
+  
+  const cleanToken = (t: string) => t.split("#")[0].split("//")[0].trim();
+  
+  return [
+    cleanToken(token1),
+    cleanToken(token2),
+  ];
+};
 
 export class GithubApiService extends GithubRepository {
   async requestUserRepository(
@@ -75,14 +82,22 @@ export class GithubApiService extends GithubRepository {
 
       if (status.includes("rejected")) {
         Logger.error(`Can not find a user with username:' ${username}'`);
+        Logger.error('Repository:', repository);
+        Logger.error('Activity:', activity);
+        Logger.error('Issue:', issue);
+        Logger.error('PullRequest:', pullRequest);
         return new ServiceError("Not found", EServiceKindError.NOT_FOUND);
       }
 
+      // Inject devtoArticles, lifetimeReviews and totalOrgs if available globally
       return new UserInfo(
         (activity as PromiseFulfilledResult<GitHubUserActivity>).value,
         (issue as PromiseFulfilledResult<GitHubUserIssue>).value,
         (pullRequest as PromiseFulfilledResult<GitHubUserPullRequest>).value,
         (repository as PromiseFulfilledResult<GitHubUserRepository>).value,
+        (globalThis.devtoArticles || 0),
+        (globalThis.lifetimeReviews || -1),
+        (globalThis.totalOrgs || -1)
       );
     } catch {
       Logger.error(`Error fetching user info for username: ${username}`);

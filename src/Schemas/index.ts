@@ -7,12 +7,8 @@ export const queryUserActivity = `
           restrictedContributionsCount
           totalPullRequestReviewContributions
         }
-        organizations {
+        organizations(first: 100) {
           totalCount
-          nodes {
-            name
-            login
-          }
         }
         followers(first: 1) {
           totalCount
@@ -51,8 +47,11 @@ export const queryUserRepository = `
         totalCount
         nodes {
           languages(first: 3, orderBy: {direction:DESC, field: SIZE}) {
-            nodes {
-              name
+            edges {
+              size
+              node {
+                name
+              }
             }
           }
           stargazers {

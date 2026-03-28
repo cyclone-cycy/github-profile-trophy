@@ -1,7 +1,8 @@
 type Language = { name: string };
+type LanguageEdge = { size: number; node: Language };
 type Stargazers = { totalCount: number };
 type Repository = {
-  languages: { nodes: Language[] };
+  languages: { edges: LanguageEdge[] };
   stargazers: Stargazers;
   createdAt: string;
 };
@@ -51,16 +52,21 @@ export class UserInfo {
   public readonly totalStargazers: number;
   public readonly totalRepositories: number;
   public readonly languageCount: number;
+  public readonly totalLinesOfCode: number;
   public readonly durationYear: number;
   public readonly durationDays: number;
   public readonly ancientAccount: number;
   public readonly joined2020: number;
   public readonly ogAccount: number;
+  public readonly devtoArticles: number;
   constructor(
     userActivity: GitHubUserActivity,
     userIssue: GitHubUserIssue,
     userPullRequest: GitHubUserPullRequest,
     userRepository: GitHubUserRepository,
+    devtoArticles: number = 0,
+    lifetimeReviews: number = -1,
+    lifetimeOrgs: number = -1,
   ) {
     const totalCommits =
       userActivity.contributionsCollection.restrictedContributionsCount +
@@ -73,11 +79,13 @@ export class UserInfo {
     );
 
     const languages = new Set<string>();
+    let totalLinesOfCode = 0;
     userRepository.repositories.nodes.forEach((node: Repository) => {
-      if (node.languages.nodes != undefined) {
-        node.languages.nodes.forEach((node: Language) => {
-          if (node != undefined) {
-            languages.add(node.name);
+      if (node.languages.edges != undefined) {
+        node.languages.edges.forEach((edge: LanguageEdge) => {
+          if (edge != undefined) {
+            languages.add(edge.node.name);
+            totalLinesOfCode += edge.size || 0;
           }
         });
       }
@@ -111,17 +119,22 @@ export class UserInfo {
     this.totalFollowers = userActivity.followers.totalCount;
     this.totalIssues = userIssue.openIssues.totalCount +
       userIssue.closedIssues.totalCount;
-    this.totalOrganizations = userActivity.organizations.totalCount;
+    this.totalOrganizations = lifetimeOrgs !== -1
+      ? lifetimeOrgs
+      : userActivity.organizations.totalCount;
     this.totalPullRequests = userPullRequest.pullRequests.totalCount;
-    this.totalReviews =
-      userActivity.contributionsCollection.totalPullRequestReviewContributions;
+    this.totalReviews = lifetimeReviews !== -1
+      ? lifetimeReviews
+      : userActivity.contributionsCollection.totalPullRequestReviewContributions;
     this.totalStargazers = totalStargazers;
     this.totalRepositories = userRepository.repositories.totalCount;
     this.languageCount = languages.size;
+    this.totalLinesOfCode = totalLinesOfCode;
     this.durationYear = durationYear;
     this.durationDays = durationDays;
     this.ancientAccount = ancientAccount;
     this.joined2020 = joined2020;
     this.ogAccount = ogAccount;
+    this.devtoArticles = devtoArticles;
   }
 }

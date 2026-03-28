@@ -32,20 +32,33 @@ export class CustomURLSearchParams extends URLSearchParams {
 
 export function parseParams(req: Request): CustomURLSearchParams {
   const splittedURL = req.url.split("?");
-  if (splittedURL.length < 2) {
-    return new CustomURLSearchParams();
+  const params = splittedURL.length < 2 ? new CustomURLSearchParams() : new CustomURLSearchParams(splittedURL[1]);
+  
+  // Add default username from env if not provided
+  if (!params.has("username") && Deno.env.get("DEFAULT_USERNAME")) {
+    const rawUsername = Deno.env.get("DEFAULT_USERNAME")!;
+    const cleanUsername = rawUsername.split("#")[0].split("//")[0].trim();
+    params.set("username", cleanUsername);
   }
-  return new CustomURLSearchParams(splittedURL[1]);
+  
+  return params;
 }
 
 export function abridgeScore(score: number): string {
-  if (Math.abs(score) < 1) {
+  const absScore = Math.abs(score);
+  if (absScore < 1) {
     return "0pt";
   }
-  if (Math.abs(score) > 999) {
-    return (Math.sign(score) * (Math.abs(score) / 1000)).toFixed(1) + "kpt";
+  if (absScore >= 1000000000) {
+    return (Math.sign(score) * (absScore / 1000000000)).toFixed(1) + "Bpt";
   }
-  return (Math.sign(score) * Math.abs(score)).toString() + "pt";
+  if (absScore >= 1000000) {
+    return (Math.sign(score) * (absScore / 1000000)).toFixed(1) + "Mpt";
+  }
+  if (absScore >= 1000) {
+    return (Math.sign(score) * (absScore / 1000)).toFixed(1) + "kpt";
+  }
+  return (Math.sign(score) * absScore).toString() + "pt";
 }
 
 const HOUR_IN_MILLISECONDS = 60 * 60 * 1000;

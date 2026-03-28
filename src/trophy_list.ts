@@ -18,6 +18,7 @@ import {
   TotalRepositoryTrophy,
   TotalReviewsTrophy,
   TotalStarTrophy,
+  TeamPlayerTrophy,
   Trophy,
 } from "./trophy.ts";
 import { UserInfo } from "./user_info.ts";
@@ -27,7 +28,7 @@ export class TrophyList {
   private trophies = new Array<Trophy>();
   constructor(userInfo: UserInfo) {
     // 🎯 CYNTHIA'S CUSTOM TROPHY SET
-    // Core GitHub metrics (no stars - removed TotalStarTrophy)
+    // Core GitHub metrics
     this.trophies.push(
       new TotalCommitTrophy(userInfo.totalCommits),
       new TotalFollowerTrophy(userInfo.totalFollowers),
@@ -38,10 +39,11 @@ export class TrophyList {
     
     // 🎨 Custom trophies for specialized achievements
     this.trophies.push(
-      new BloggerTrophy(userInfo.devtoArticles || 0), // Will need to add this to UserInfo
+      new BloggerTrophy(userInfo.devtoArticles || 0),
       new MentorTrophy(userInfo.totalReviews),
-      new ArchitectTrophy(userInfo.totalLinesOfCode || 0), // Will need to add this
+      new ArchitectTrophy(userInfo.totalLinesOfCode || 0),
       new PolyglotTrophy(userInfo.languageCount),
+      new TeamPlayerTrophy(userInfo.totalOrganizations),
     );
     
     // 🚫 REMOVED ALL SECRET TROPHIES (not relevant for newer GitHub accounts)

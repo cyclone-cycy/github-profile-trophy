@@ -127,11 +127,72 @@ async function app(req: Request): Promise<Response> {
   ).map((r) => r.trim());
 
   const userKeyCache = ["v1", username].join("-");
-  const userInfoCached = await cacheProvider.get(userKeyCache) || "{}";
+  const forceFresh = params.getBooleanValue("cache", true) === false;
+  const userInfoCached = !forceFresh ? (await cacheProvider.get(userKeyCache) || "{}") : "{}";
   let userInfo = JSON.parse(userInfoCached);
   const hasCache = !!Object.keys(userInfo).length;
 
   if (!hasCache) {
+    // Fetch Dev.to articles
+    let devtoArticles = 0;
+    const rawDevtoUsername = Deno.env.get("DEVTO_USERNAME") || username;
+    const devtoUsername = rawDevtoUsername.split("#")[0].split("//")[0].trim();
+    try {
+      const devtoResp = await fetch(`https://dev.to/api/articles?username=${devtoUsername}&per_page=100`);
+      const devtoData = await devtoResp.json();
+      
+      if (Array.isArray(devtoData)) {
+        devtoArticles = devtoData.length;
+      }
+    } catch (e) {
+      // Silence Dev.to fetch errors
+    }
+    globalThis.devtoArticles = devtoArticles;
+
+    // Fetch Lifetime PR Reviews
+    let lifetimeReviews = -1;
+    try {
+      const token1 = Deno.env.get("GITHUB_TOKEN1") || "";
+      const cleanToken = token1.split("#")[0].split("//")[0].trim();
+      if (cleanToken) {
+        const reviewsResp = await fetch(`https://api.github.com/search/issues?q=reviewed-by:${username}+type:pr&per_page=1`, {
+          headers: {
+            "Authorization": `Bearer ${cleanToken}`,
+            "Accept": "application/json"
+          }
+        });
+        const reviewsData = await reviewsResp.json();
+        if (reviewsData && typeof reviewsData.total_count === "number") {
+          lifetimeReviews = reviewsData.total_count;
+        }
+      }
+    } catch (e) {
+      // Silence Review fetch errors
+    }
+    globalThis.lifetimeReviews = lifetimeReviews;
+
+    // Fetch Total Organizations (including private ones if token allows)
+    let totalOrgs = -1;
+    try {
+      const token1 = Deno.env.get("GITHUB_TOKEN1") || "";
+      const cleanToken = token1.split("#")[0].split("//")[0].trim();
+      if (cleanToken) {
+        const orgsResp = await fetch(`https://api.github.com/user/orgs?per_page=100`, {
+          headers: {
+            "Authorization": `Bearer ${cleanToken}`,
+            "Accept": "application/json"
+          }
+        });
+        const orgsData = await orgsResp.json();
+        if (Array.isArray(orgsData)) {
+          totalOrgs = orgsData.length;
+        }
+      }
+    } catch (e) {
+      // Silence Org fetch errors
+    }
+    globalThis.totalOrgs = totalOrgs;
+
     const userResponseInfo = await client.requestUserInfo(username);
     if (userResponseInfo instanceof ServiceError) {
       return new Response(

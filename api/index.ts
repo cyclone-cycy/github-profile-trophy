@@ -8,7 +8,7 @@ import { GithubRepositoryService } from "../src/Repository/GithubRepository.ts";
 import { GithubApiService } from "../src/Services/GithubApiService.ts";
 import { ServiceError } from "../src/Types/index.ts";
 import { cacheProvider } from "../src/config/cache.ts";
-import { FALLBACK_TROPHY_SVG } from "../src/fallbackTrophy.ts";
+import { ErrorPage } from "../src/pages/Error.ts";
 
 const serviceProvider = new GithubApiService();
 const client = new GithubRepositoryService(serviceProvider).repository;
@@ -195,22 +195,13 @@ async function app(req: Request): Promise<Response> {
 
     const userResponseInfo = await client.requestUserInfo(username);
     if (userResponseInfo instanceof ServiceError) {
-      // Serve a static, real-snapshot fallback instead of the broken-looking
-      // error page, so visitors never see a visibly failed card. The reason
-      // (bad token, rate limit, actually-not-found user, etc.) is only
-      // detectable via the X-Trophy-Source header or view-source, never by
-      // looking at the rendered card.
-      console.error(
-        `Serving fallback trophy card: ${userResponseInfo.message}`,
-      );
       return new Response(
-        FALLBACK_TROPHY_SVG,
+        ErrorPage({ error: userResponseInfo }).render(),
         {
-          status: 200,
+          status: userResponseInfo.code,
           headers: new Headers({
-            "Content-Type": "image/svg+xml",
-            "Cache-Control": "public, max-age=300",
-            "X-Trophy-Source": "fallback",
+            "Content-Type": "text",
+            "Cache-Control": cacheControlHeader,
           }),
         },
       );
